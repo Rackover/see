@@ -41,4 +41,16 @@ function Utils.print_table(table)
   print(Utils.table_to_string(table))
 end
 
+function Utils.lerp(a, b, delta)
+	return a + (b - a) * delta
+end
+
+function Utils.point_on_circle(angle_rad, radius, origin)
+  local origin = origin or {x=0, y=0}
+  return {
+    x = math.cos(angle_rad)*radius + origin.x,
+    y = math.sin(angle_rad)*radius + origin.y
+  }
+end
+
 return Utils

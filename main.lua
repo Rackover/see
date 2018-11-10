@@ -12,16 +12,38 @@ local net = false
 
 function love.load(deltaTime)
   props:load()
-  props:new("cube.obj")
+  brush.active_camera = require("camera")
+  
+  props:new("cube.obj", {x=1, y=0, z=0})
   
   -- Inet
   if net then client = require("client") end
 end
 
+function love.keypressed( key, scancode, isrepeat )
+  for k in ipairs(props.active) do
+    if (key == "q") then
+      props.active[k].position.y = props.active[k].position.y - 50
+    end
+    if (key == "d") then
+      props.active[k].position.y = props.active[k].position.y + 50
+    end
+    if (key == "z") then
+      props.active[k].position.x = props.active[k].position.x - 1
+    end
+    if (key == "s") then
+      props.active[k].position.x = props.active[k].position.x + 1
+    end
+    if (key == "a") then
+      props.active[k].position.z = props.active[k].position.z - 1
+    end
+    if (key == "e") then
+      props.active[k].position.z = props.active[k].position.z + 1
+    end
+  end
+end
+
 function love.update()
-  
-  
-  
   
   
   
@@ -45,11 +67,11 @@ function love.draw()
   love.graphics.clear()
   love.graphics.setColor(1, 0, 0, 1)
   width, height = love.graphics.getDimensions()
-  love.graphics.line(0, 0, width, height)
+  --love.graphics.line(0, 0, width, height)
   
   -- Draw props
   for k in ipairs(props.active) do
-    brush.draw(props.active[k])
+    brush:draw(props.active[k])
   end
 end
   --[[

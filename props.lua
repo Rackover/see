@@ -22,7 +22,7 @@ function Props:load()
     if content then
       logger:debug('Converting '..filename..'...')
       local new_content = to_lua.convert(obj_path..'/'..filename)
-      table.insert(self.catalog, new_content)
+      self.catalog[filename] = new_content
     else
       logger:warn(err)
     end
