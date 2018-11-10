@@ -1,29 +1,57 @@
 io.stdout:setvbuf("no")
 
 local socket = require "socket"
+
 local logger = require("logger")
 local props = require("props")
+local utils = require("utils")
+local brush = require("brush")
 
 local client
+local net = false
 
 function love.load(deltaTime)
-  props.update()
-  client = require("client")
+  props:load()
+  props:new("cube.obj")
+  
+  -- Inet
+  if net then client = require("client") end
 end
 
 function love.update()
-  logger:debug ("Sending Alive")
-  client:send("Alive")
-  if (client:checkConnection()) then
-    logger:debug ("Connection OK")  
-  else
-    logger:info ("Closed client - shutting down")
-    client:close()
-    love.event.quit( )
+  
+  
+  
+  
+  
+  
+  
+  --- Inet
+  if (net) then
+    logger:debug ("Sending Alive")
+    client:send("Alive")
+    if (client:checkConnection()) then
+      logger:debug ("Connection OK")  
+    else
+      logger:info ("Closed client - shutting down")
+      client:close()
+      love.event.quit( )
+    end
   end
-  socket.sleep(1)
 end
   
+  
+function love.draw()
+  love.graphics.clear()
+  love.graphics.setColor(1, 0, 0, 1)
+  width, height = love.graphics.getDimensions()
+  love.graphics.line(0, 0, width, height)
+  
+  -- Draw props
+  for k in ipairs(props.active) do
+    brush.draw(props.active[k])
+  end
+end
   --[[
   for i=1, fakePlayers do
     clients[i] = require("client")

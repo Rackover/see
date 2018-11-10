@@ -24,7 +24,7 @@ function Server:handleConnections()
   if not err then
     table.insert(self.clients, client)
     client:send("Hello" .. "\n") 
-    logger:info ("Accepted client "..tostring(table.getn(self.clients)))
+    logger:info ("Accepted client "..tostring(#self.clients))
   end
 end
 

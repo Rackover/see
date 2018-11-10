@@ -1,13 +1,18 @@
-local logger = require "logger"
+local logger = require('logger')
 local to_lua = require('obj_to_lua')
-local md5 = require "lib/md5"
+local disk = require('disk')
+local utils = require('utils')
 
-local Props = {}
+local Props = {
+  catalog={},
+  active={}
+}
 
 local props_path = [[data/props]]
 local obj_path = props_path..'/obj'
 
-function Props.update()
+-- Load props into the catalog
+function Props:load()
   obj_files = love.filesystem.getDirectoryItems(obj_path)
   assert(love.filesystem.createDirectory(props_path))
   
@@ -15,36 +20,24 @@ function Props.update()
     -- Found OBJ file, let's read it
     local content, err = love.filesystem.read(obj_path..'/'..filename)
     if content then
-      -- Do we already have a lua file for this ?
-      if (love.filesystem.getInfo(props_path..'/'..filename..'.lua')) then
-        -- yes let's check the sum
-        local lua_object = dofile(props_path..'/'..filename..'.lua')
-        obj_sum = md5.sumhexa(content)
-        if (obj_sum ~= lua_object.sum) then
-          -- wrong sum, remake the file
-          logger:debug(filename..' has changed, remaking it')
-          local newContent = to_lua.convert(obj_path..'/'..filename)
-          local success, message = love.filesystem.write(props_path..'/'..filename..'.lua', table.concat(newContent))
-          if not success then logger:warn('Writing failed : '..message) end
-        else
-          -- everything okay
-          logger:debug(filename..' has been converted already')
-        end
-      else
-        -- no, remake the file
-        logger:debug(filename..' is new, converting it')
-        local newContent = to_lua.convert(obj_path..'/'..filename)
-        
-        os.exit()
-        
-        
-        local success, message = love.filesystem.write(props_path..'/'..filename..'.lua', table.concat(newContent))
-        if not success then logger:warn('Writing failed : '..message) end
-      end
+      logger:debug('Converting '..filename..'...')
+      local new_content = to_lua.convert(obj_path..'/'..filename)
+      table.insert(self.catalog, new_content)
     else
       logger:warn(err)
     end
   end
 end
 
+function Props:new(str_name, position)
+  table.insert(self.active, 
+    {
+      model=self.catalog[str_name],
+      position=position or {x=0, y=0, z=0},
+      name=str_name,
+      color={1,0,0,1}
+    }
+  )
+  return #self.active
+end
 return Props

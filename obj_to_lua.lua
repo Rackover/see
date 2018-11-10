@@ -53,11 +53,6 @@ function Loader.convert(file)
 	local result = Loader.parse(lines)
   
   result.sum = sum
-  print("Showing "..sum)
-  for k,v in pairs(result) do
-    print(k,v)
-  end
-  print("end")
   return result
 end
 
