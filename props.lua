@@ -9,19 +9,17 @@ local Props = {
 }
 
 local props_path = [[data/props]]
-local obj_path = props_path..'/obj'
 
 -- Load props into the catalog
 function Props:load()
-  obj_files = love.filesystem.getDirectoryItems(obj_path)
-  assert(love.filesystem.createDirectory(props_path))
+  local obj_files = love.filesystem.getDirectoryItems(props_path)
   
   for _, filename in ipairs(obj_files) do
     -- Found OBJ file, let's read it
-    local content, err = love.filesystem.read(obj_path..'/'..filename)
+    local content, err = love.filesystem.read(props_path..'/'..filename)
     if content then
       logger:debug('Converting '..filename..'...')
-      local new_content = to_lua.convert(obj_path..'/'..filename)
+      local new_content = to_lua.convert(props_path..'/'..filename)
       self.catalog[filename] = new_content
     else
       logger:warn(err)

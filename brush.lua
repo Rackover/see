@@ -16,26 +16,6 @@ local Brush = {
 
 ]]--
 
--- Translates GLOBAL position to SCREEN position
-function Brush:to_screen(position)
-  local width, height = love.graphics.getDimensions()
-  local forward = utils.point_on_circle(self.active_camera.z_angle, 1)
-  local camera_relative_position = self.active_camera:to_camera_referential(position)
-  local screen_center = {
-    x = width/2,
-    y = height/2
-  }
-    
-  local screen_position = {
-    x = utils.lerp(camera_relative_position.y, screen_center.x, camera_relative_position.x/self.active_camera.depth),
-    y = height - utils.lerp(camera_relative_position.z, screen_center.y, camera_relative_position.z/self.active_camera.depth)
-  }
-  
-  --print(position.x, position.y, position.z)
-  --print(camera_relative_position.x, camera_relative_position.y, camera_relative_position.z)
-  --print(screen_position.x, screen_position.y)
-  return screen_position
-end
 
 function Brush:report(vertices, position)
   local translated_vertices = {}
@@ -46,34 +26,20 @@ function Brush:report(vertices, position)
       y = position.y + vertex.y,
       z = position.z + vertex.z
     }
-    local point = self:to_screen(vertex_position)
+    local point = self.active_camera:to_screen(vertex_position)
     table.insert(translated_vertices, point)
   end
   return translated_vertices
 end
---[[
--- Translates 3D model on a 2D space based on camera orientation
-function Brush:translate(model, position)
-  local translated_vertices = {}
-  local vanishing_point = self.active_camera:get_vanishing_point()
-  for (k, vertex in model.v) do
-    local point = {
-      x = utils.lerp(position.x + vertex.x, vanishing_point.x, (vertex.z)/self.active_camera.depth + position.x),
-      
-      y = utils.lerp(position.y - vertex.y, vanishing_point.y, (vertex.z)/self.active_camera.depth + position.z),
-    }
-  end
-end
-  
---]]
+
 function Brush:draw(object)
   local vertices = Brush:report(object.model.v, object.position)
   for k in ipairs(object.model.f) do
     local f = object.model.f[k]
     local points = {}
     for l in ipairs(f) do
-      table.insert(points, vertices[l+1].x)
-      table.insert(points, vertices[l+1].y)
+      table.insert(points, vertices[l].x)
+      table.insert(points, vertices[l].y)
     end
     -- Closing the loop
     table.insert(points, vertices[1].x)

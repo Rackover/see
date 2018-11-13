@@ -14,7 +14,7 @@ function love.load(deltaTime)
   props:load()
   brush.active_camera = require("camera")
   
-  props:new("cube.obj", {x=1, y=0, z=0})
+  props:new("triangle.obj", {x=2, y=0, z=0})
   
   -- Inet
   if net then client = require("client") end
@@ -22,12 +22,14 @@ end
 
 function love.keypressed( key, scancode, isrepeat )
   for k in ipairs(props.active) do
+    --[[
     if (key == "q") then
       props.active[k].position.y = props.active[k].position.y - 50
     end
     if (key == "d") then
       props.active[k].position.y = props.active[k].position.y + 50
     end
+    ]]--
     if (key == "z") then
       props.active[k].position.x = props.active[k].position.x - 1
     end
@@ -35,17 +37,19 @@ function love.keypressed( key, scancode, isrepeat )
       props.active[k].position.x = props.active[k].position.x + 1
     end
     if (key == "a") then
-      props.active[k].position.z = props.active[k].position.z - 1
+      props.active[k].position.z = props.active[k].position.z + 5
     end
     if (key == "e") then
-      props.active[k].position.z = props.active[k].position.z + 1
+      props.active[k].position.z = props.active[k].position.z - 5
     end
   end
 end
 
-function love.update()
+function love.update(delta_time)
   
-  
+  for k in ipairs(props.active) do
+    props.active[k].position.y = math.sin(os.clock())*100
+  end
   
   
   --- Inet

@@ -6,6 +6,26 @@ local Camera = {
   position = {x=0,y=0,z=0}
 }
 
+function Camera:to_screen(position)
+  local width, height = love.graphics.getDimensions()
+  local forward = utils.point_on_circle(self.z_angle, 1)
+  local camera_relative_position = self:to_camera_referential(position)
+  local screen_center = {
+    x = width/2,
+    y = height/2
+  }
+    
+  local screen_position = {
+    x = utils.lerp(screen_center.x-camera_relative_position.y, screen_center.x, camera_relative_position.x/self.depth),
+    y = height - utils.lerp(screen_center.y-camera_relative_position.z, screen_center.y, camera_relative_position.z/self.depth)
+  }
+  
+  --print(position.x, position.y, position.z)
+  --print(camera_relative_position.x, camera_relative_position.y, camera_relative_position.z)
+  --print(screen_position.x, screen_position.y)
+  return screen_position
+end
+
 function Camera:get_vanishing_point()
   local ground_pos = utils.point_on_circle(self.z_angle, depth, position)
   return {x=ground_pos.x, y=ground_pos.y, z=self.z}
